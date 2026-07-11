@@ -2,21 +2,37 @@
 
 ## Description
 
-Demo project for integrating _Spring Boot_ and _JavaFX_. The Demo has the following features:
+Demo project showing how to integrate Spring Boot with JavaFX: bootstrapping a JavaFX app from Spring, injecting Spring beans into FXML controllers, and navigating between views using an Angular Router-inspired `StageRouter`.
 
-1. Simple working sample code for a small desktop application.
-2. Configuration for _maven_ or _gradle_ project to use _JavaFX_ with _Spring Boot_, with the appropriate maven artifact.
-   dependencies for basic development.
-3. Uses recent, reasonably up-to-date _JavaFX_ modules, with consistent versions.
-4. Demonstrates placing an _FXML_ file in a resource directory, and looking it up as a resource at runtime.
-5. Properly separates a controller class from the application class.
-6. Demonstrates how to bootstrap _JavaFX_ application using _Spring Boot_.
-7. Demonstrates how to use _Spring Boot_ features within _JavaFX_.
-8. Showcase how to navigate between _JavaFX_ view using a router implementation, heavily inspired on Angular/Router.
+## Commands
 
-## Getting Started
+Plain Maven build — there is no Maven wrapper (`mvnw`) committed, so use `mvn` directly:
 
-### Advantages 
+- `mvn compile` — compile
+- `mvn spring-boot:run` — run the JavaFX app
+- `mvn test` — run all tests
+- `mvn test -Dtest=MainApplicationTests` — run a single test class
+
+The `maven-compiler-plugin` explicitly declares `annotationProcessorPaths` (Lombok + `spring-boot-configuration-processor`) — on newer JDKs, javac's implicit annotation-processor discovery via `-classpath` can silently skip Lombok (no error, `val`/`@Slf4j`/etc. just don't expand), so don't remove that config.
+
+`.\jpackage.ps1` (Windows/PowerShell) builds a self-contained native executable at `target\dist\JfxPlayground\JfxPlayground.exe` via `jpackage` (`--type app-image`, bundles its own JRE, no installer/WiX needed). It works by building the plain (pre-repackage) app jar plus `mvn dependency:copy-dependencies` into a flat `target\jpackage-input` directory, since jpackage's non-modular classpath only picks up jars directly in `--input`, not the Spring Boot fat jar's nested `BOOT-INF/` structure. Lombok is stripped from that directory afterward since it's compile-time only and unused at runtime.
+
+## Architecture
+
+Everything lives under a single package: `com.example.jfx.spring`.
+
+- **`MainApplication`** — Spring Boot entry point (`@SpringBootApplication`). `main()` doesn't call `SpringApplication.run`; it calls `Application.launch(JavaFxApplication.class, ...)` so the JavaFX toolkit drives the lifecycle instead.
+- **`JavaFxApplication`** (extends `javafx.application.Application`) — bridges JavaFX and Spring:
+  - `init()` builds a headless (`WebApplicationType.NONE`) `SpringApplicationBuilder` and registers the JavaFX `Application`, `Parameters`, and `HostServices` as beans via an `ApplicationContextInitializer`, so they can be `@Autowired` elsewhere.
+  - `start(primaryStage)` doesn't build UI directly — it publishes a `StageReadyEvent` (an inner `ApplicationEvent` wrapping the `Stage`) through the Spring context. This defers stage setup to a Spring-managed listener.
+  - `stop()` closes the Spring context and calls `Platform.exit()`.
+- **`PrimaryStageInitializer`** (`@Component`, package-private) — the `ApplicationListener<StageReadyEvent>` that actually builds the scene on startup, and also implements `StageRouter` to handle later navigation. Loads FXML via `FXMLLoader`, wiring `fxmlLoader.setControllerFactory(applicationContext::getBean)` so FXML controllers (`PrimaryController`, `SecondaryController`) are real Spring beans with constructor injection. Navigation (`navigateByUrl`) just re-resolves an FXML resource by name and swaps `scene.setRoot(...)`.
+- **`StageRouter`** — one-method interface (`navigateByUrl(String url)`) implemented by `PrimaryStageInitializer`; injected into controllers so they aren't coupled to stage/scene mechanics.
+- **`PrimaryController` / `SecondaryController`** — `@Controller` beans bound to `primary.fxml` / `secondary.fxml` via `fx:controller`. Each has an `@FXML`-annotated handler that calls `router.navigateByUrl(...)` to flip to the other view.
+- **`AppProperties`** — `@ConfigurationProperties("app")` record backing the `app.*` keys in `application.properties` (title, index view, width, height). Requires `@ConfigurationPropertiesScan` on `MainApplication` (already present) rather than an explicit `@EnableConfigurationProperties`.
+- FXML views live in `src/main/resources` (`primary.fxml`, `secondary.fxml`) and are looked up by name (e.g. `/primary` → `primary.fxml`) relative to `PrimaryStageInitializer`'s classloader.
+
+## Advantages 
 
 **Architecture / maintainability**
 - Business logic, validation, and data access live server-side, decoupled from UI code. You can change the backend without touching the client, or swap the UI framework entirely later.
@@ -40,7 +56,7 @@ Demo project for integrating _Spring Boot_ and _JavaFX_. The Demo has the follow
 **Ecosystem/integration**
 - Spring Boot makes it easy to plug into things like Spring Security, Spring Data, message queues, scheduling, external APIs — infrastructure that's awkward to replicate in a plain desktop app talking directly to a database.
 
-### When it's not worth it**
+### When it's not worth it
 
 If the app is single-user, local-only, doesn't need to share data or logic with other clients, and has no need for server-side security boundaries, a plain JavaFX app talking directly to a local DB (SQLite, embedded H2, etc.) is simpler and avoids the overhead of running/deploying/maintaining a separate backend service, network calls, latency, and two codebases instead of one.
 
