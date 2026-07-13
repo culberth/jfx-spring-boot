@@ -4,11 +4,11 @@
 #   ./jpackage.sh
 #
 # Output:
-#   target/dist/JfxPlayground/bin/JfxPlayground   (self-contained, bundles its own JRE)
+#   target/dist/JfxSpringBoot/bin/JfxSpringBoot   (self-contained, bundles its own JRE)
 
 set -euo pipefail
 
-APP_NAME="JfxPlayground"
+APP_NAME="JfxSpringBoot"
 APP_VERSION="0.0.1"
 MAIN_CLASS="com.example.jfx.spring.MainApplication"
 JAR_NAME="jfx-playground-0.0.1-SNAPSHOT.jar"

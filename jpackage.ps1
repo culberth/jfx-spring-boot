@@ -3,13 +3,13 @@
 #   .\jpackage.ps1
 #
 # Output:
-#   target\dist\JfxPlayground\JfxPlayground.exe         (GUI only, no console)
-#   target\dist\JfxPlayground\JfxPlaygroundConsole.exe   (GUI + console window, same app image)
+#   target\dist\JfxSpringBoot\JfxSpringBoot.exe         (GUI only, no console)
+#   target\dist\JfxSpringBoot\JfxSpringBootConsole.exe   (GUI + console window, same app image)
 # Both are self-contained and bundle their own JRE.
 
 $ErrorActionPreference = "Stop"
 
-$AppName = "JfxPlayground"
+$AppName = "JfxSpringBoot"
 $AppVersion = "0.0.1"
 $MainClass = "com.example.jfx.spring.MainApplication"
 $JarName = "jfx-playground-0.0.1-SNAPSHOT.jar"

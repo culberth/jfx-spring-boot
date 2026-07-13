@@ -13,9 +13,9 @@ Use the committed Maven wrapper (`mvnw` / `mvnw.cmd`) so everyone builds with th
 
 The `maven-compiler-plugin` explicitly declares `annotationProcessorPaths` (Lombok + `spring-boot-configuration-processor`) — on newer JDKs, javac's implicit annotation-processor discovery via `-classpath` can silently skip Lombok (no error, `val`/`@Slf4j`/etc. just don't expand), so don't remove that config.
 
-`.\jpackage.ps1` (Windows/PowerShell) builds a self-contained native executable at `target\dist\JfxPlayground\JfxPlayground.exe` via `jpackage` (`--type app-image`, bundles its own JRE, no installer/WiX needed). It works by building the plain (pre-repackage) app jar plus `mvn dependency:copy-dependencies` into a flat `target\jpackage-input` directory, since jpackage's non-modular classpath only picks up jars directly in `--input`, not the Spring Boot fat jar's nested `BOOT-INF/` structure. Lombok is stripped from that directory afterward since it's compile-time only and unused at runtime.
+`.\jpackage.ps1` (Windows/PowerShell) builds a self-contained native executable at `target\dist\JfxSpringBoot\JfxSpringBoot.exe` via `jpackage` (`--type app-image`, bundles its own JRE, no installer/WiX needed). It works by building the plain (pre-repackage) app jar plus `mvn dependency:copy-dependencies` into a flat `target\jpackage-input` directory, since jpackage's non-modular classpath only picks up jars directly in `--input`, not the Spring Boot fat jar's nested `BOOT-INF/` structure. Lombok is stripped from that directory afterward since it's compile-time only and unused at runtime.
 
-`./jpackage.sh` (Linux/bash) is the equivalent for Linux builds, producing `target/dist/JfxPlayground/bin/JfxPlayground`. Same jpackage-input assembly approach; it skips the Windows-only console/no-console dual-launcher step since Linux app-images don't have that distinction.
+`./jpackage.sh` (Linux/bash) is the equivalent for Linux builds, producing `target/dist/JfxSpringBoot/bin/JfxSpringBoot`. Same jpackage-input assembly approach; it skips the Windows-only console/no-console dual-launcher step since Linux app-images don't have that distinction.
 
 ## Architecture
 
