@@ -1,4 +1,4 @@
-# JFX Playground
+# JFX Spring Boot
 
 ## Description
 
