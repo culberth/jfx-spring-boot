@@ -1,4 +1,4 @@
-# Builds a standalone Windows executable (app-image) for jfx-playground using jpackage.
+# Builds a standalone Windows executable (app-image) for jfx-jfx-spring-boot using jpackage.
 # Requires JDK 14+ (jpackage is bundled with the JDK). Run from the repo root:
 #   .\jpackage.ps1
 #
@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 $AppName = "JfxSpringBoot"
 $AppVersion = "0.0.1"
 $MainClass = "com.example.jfx.spring.MainApplication"
-$JarName = "jfx-playground-0.0.1-SNAPSHOT.jar"
+$JarName = "jfx-spring-boot-0.0.1-SNAPSHOT.jar"
 
 Write-Host "Building application jar..."
 & mvn -q clean package -DskipTests

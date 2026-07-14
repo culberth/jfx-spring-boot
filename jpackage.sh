@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds a standalone Linux executable (app-image) for jfx-playground using jpackage.
+# Builds a standalone Linux executable (app-image) for jfx-jfx-spring-boot using jpackage.
 # Requires JDK 14+ (jpackage is bundled with the JDK). Run from the repo root:
 #   ./jpackage.sh
 #
@@ -11,7 +11,7 @@ set -euo pipefail
 APP_NAME="JfxSpringBoot"
 APP_VERSION="0.0.1"
 MAIN_CLASS="com.example.jfx.spring.MainApplication"
-JAR_NAME="jfx-playground-0.0.1-SNAPSHOT.jar"
+JAR_NAME="jfx-jfx-spring-boot-0.0.1-SNAPSHOT.jar"
 
 echo "Building application jar..."
 ./mvnw -q clean package -DskipTests

@@ -10,9 +10,9 @@
     </parent>
     
     <groupId>com.example.jfx.spring</groupId>
-    <artifactId>jfx-playground</artifactId>
+    <artifactId>jfx-spring-boot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>jfx-playground</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Demo project for Spring Boot and JFX</description>
 
     <properties>
