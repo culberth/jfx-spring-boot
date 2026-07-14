@@ -1,4 +1,4 @@
-# Builds a standalone Windows executable (app-image) for jfx-jfx-spring-boot using jpackage.
+# Builds a standalone Windows executable (app-image) for jfx-spring-boot using jpackage.
 # Requires JDK 14+ (jpackage is bundled with the JDK). Run from the repo root:
 #   .\jpackage.ps1
 #
@@ -51,7 +51,7 @@ if (Test-Path $DestDir) { Remove-Item -Recurse -Force $DestDir }
     --main-jar $JarName `
     --main-class $MainClass `
     --app-version $AppVersion `
-    --vendor "eljaiek" `
+    --vendor "vendor" `
     --description "Demo project for Spring Boot and JavaFX" `
     --add-launcher "${AppName}Console=$ConsoleLauncherProps"
 if ($LASTEXITCODE -ne 0) { throw "jpackage failed" }
