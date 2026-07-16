@@ -1,29 +1,33 @@
-# Builds a standalone Windows executable (app-image) for jfx-spring-boot using jpackage.
-# Requires JDK 14+ (jpackage is bundled with the JDK). Run from the repo root:
+# Builds a standalone Windows executable (app-image) for the demo-rest module using jpackage.
+# Requires JDK 14+ (jpackage is bundled with the JDK). Run from this directory:
 #   .\jpackage.ps1
 #
 # Output:
-#   target\dist\JfxSpringBoot\JfxSpringBoot.exe         (GUI only, no console)
-#   target\dist\JfxSpringBoot\JfxSpringBootConsole.exe   (GUI + console window, same app image)
+#   target\dist\JfxSpringBootRest\JfxSpringBootRest.exe         (GUI only, no console)
+#   target\dist\JfxSpringBootRest\JfxSpringBootRestConsole.exe   (GUI + console window, same app image)
 # Both are self-contained and bundle their own JRE.
 
 $ErrorActionPreference = "Stop"
 
-$AppName = "JfxSpringBoot"
+$ModuleDir = $PSScriptRoot
+$RepoRoot = Split-Path -Parent $ModuleDir
+$ModuleName = "demo-rest"
+
+$AppName = "JfxSpringBootRest"
 $AppVersion = "0.0.1"
 $MainClass = "com.example.jfx.spring.MainApplication"
-$JarName = "jfx-spring-boot-0.0.1-SNAPSHOT.jar"
+$JarName = "jfx-spring-boot-rest-0.0.1-SNAPSHOT.jar"
 
 Write-Host "Building application jar..."
-& mvn -q clean package -DskipTests
+& "$RepoRoot\mvnw.cmd" -q -f "$RepoRoot\pom.xml" -pl $ModuleName clean package -DskipTests
 if ($LASTEXITCODE -ne 0) { throw "Maven build failed" }
 
 Write-Host "Assembling jpackage input directory..."
-$InputDir = "target\jpackage-input"
+$InputDir = Join-Path $ModuleDir "target\jpackage-input"
 if (Test-Path $InputDir) { Remove-Item -Recurse -Force $InputDir }
 New-Item -ItemType Directory -Force -Path $InputDir | Out-Null
 
-& mvn -q dependency:copy-dependencies "-DoutputDirectory=$InputDir" -DincludeScope=runtime
+& "$RepoRoot\mvnw.cmd" -q -f "$RepoRoot\pom.xml" -pl $ModuleName dependency:copy-dependencies "-DoutputDirectory=$InputDir" -DincludeScope=runtime
 if ($LASTEXITCODE -ne 0) { throw "Failed to copy runtime dependencies" }
 
 # Lombok is compile-time only (annotation processing); it's harmless but unused at
@@ -34,13 +38,13 @@ Remove-Item "$InputDir\lombok-*.jar" -ErrorAction SilentlyContinue
 # The Spring Boot plugin renames the plain (thin) jar to *.jar.original and replaces
 # the original name with the fat/executable jar. jpackage needs the thin jar plus the
 # dependency jars copied above, flattened into one directory, on its plain classpath.
-Copy-Item "target\$JarName.original" "$InputDir\$JarName"
+Copy-Item (Join-Path $ModuleDir "target\$JarName.original") (Join-Path $InputDir $JarName)
 
-$ConsoleLauncherProps = "target\jpackage-console-launcher.properties"
+$ConsoleLauncherProps = Join-Path $ModuleDir "target\jpackage-console-launcher.properties"
 "win-console=true" | Set-Content $ConsoleLauncherProps
 
 Write-Host "Running jpackage..."
-$DestDir = "target\dist"
+$DestDir = Join-Path $ModuleDir "target\dist"
 if (Test-Path $DestDir) { Remove-Item -Recurse -Force $DestDir }
 
 & jpackage `
@@ -52,7 +56,7 @@ if (Test-Path $DestDir) { Remove-Item -Recurse -Force $DestDir }
     --main-class $MainClass `
     --app-version $AppVersion `
     --vendor "vendor" `
-    --description "Demo project for Spring Boot and JavaFX" `
+    --description "Demo project for Spring Boot and JavaFX, navigating between stages over REST" `
     --add-launcher "${AppName}Console=$ConsoleLauncherProps"
 if ($LASTEXITCODE -ne 0) { throw "jpackage failed" }
 
