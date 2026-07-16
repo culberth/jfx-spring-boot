@@ -10,7 +10,7 @@ Same app as [`demo`](../demo), but switching between the primary and secondary s
 - **[`NavigationClient.java`](src/main/java/com/example/jfx/spring/NavigationClient.java)** — new class, not present in `demo`. A `@Component` wrapping a `RestClient` that POSTs to `http://localhost:${server.port}/api/navigation/{view}`, i.e. the app calling back into its own embedded HTTP server.
 - **[`PrimaryController.java`](src/main/java/com/example/jfx/spring/PrimaryController.java) / [`SecondaryController.java`](src/main/java/com/example/jfx/spring/SecondaryController.java)** — take a `NavigationClient` constructor dependency instead of `StageRouter`, and their `@FXML` handlers call `navigationClient.navigateTo("secondary" | "primary")` instead of `router.navigateByUrl(...)`. `StageRouter` itself, `PrimaryStageInitializer`, the FXML files, and `AppProperties` are all unchanged from `demo`.
 - **`application.properties`** — adds `server.port=8080` so `NavigationClient` knows what port to call without extra plumbing (e.g. capturing a `WebServerInitializedEvent` for a random port). `app.title` is changed to `JFX Application (REST navigation)` to make the two apps distinguishable when both are running.
-- **`jpackage.ps1` / `jpackage.sh`** — same approach as `demo`'s, just pointed at this module (`-pl demo-rest`) and using this module's jar/app names (`jfx-spring-boot-rest-0.0.1-SNAPSHOT.jar`, `JfxSpringBootRest`).
+- **`scripts/jpackage.ps1` / `scripts/jpackage.sh`** — same approach as `demo`'s, just pointed at this module (`-pl demo-rest`) and using this module's jar/app names (`jfx-spring-boot-rest-0.0.1-SNAPSHOT.jar`, `JfxSpringBootRest`).
 
 ## REST API
 

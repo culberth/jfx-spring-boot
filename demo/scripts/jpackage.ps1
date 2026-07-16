@@ -3,13 +3,13 @@
 #   .\jpackage.ps1
 #
 # Output:
-#   target\dist\JfxSpringBoot\JfxSpringBoot.exe         (GUI only, no console)
-#   target\dist\JfxSpringBoot\JfxSpringBootConsole.exe   (GUI + console window, same app image)
+#   ..\target\dist\JfxSpringBoot\JfxSpringBoot.exe         (GUI only, no console)
+#   ..\target\dist\JfxSpringBoot\JfxSpringBootConsole.exe   (GUI + console window, same app image)
 # Both are self-contained and bundle their own JRE.
 
 $ErrorActionPreference = "Stop"
 
-$ModuleDir = $PSScriptRoot
+$ModuleDir = Split-Path -Parent $PSScriptRoot
 $RepoRoot = Split-Path -Parent $ModuleDir
 $ModuleName = "demo"
 

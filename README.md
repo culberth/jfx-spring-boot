@@ -19,10 +19,10 @@ Use the committed Maven wrapper (`mvnw` / `mvnw.cmd`) so everyone builds with th
 
 The root `pom.xml` is a `pom`-packaged parent aggregating the `demo` and `demo-rest` modules. Its `pluginManagement` declares `maven-compiler-plugin`'s `annotationProcessorPaths` (Lombok + `spring-boot-configuration-processor`) once for both modules — on newer JDKs, javac's implicit annotation-processor discovery via `-classpath` can silently skip Lombok (no error, `val`/`@Slf4j`/etc. just don't expand), so don't remove that config.
 
-Each module has its own `jpackage.ps1` / `jpackage.sh`, run from inside that module's directory:
+Each module has its own `jpackage.ps1` / `jpackage.sh` under a `scripts` folder, run from inside that folder:
 
-- `demo\jpackage.ps1` / `demo/jpackage.sh` — builds `demo\target\dist\JfxSpringBoot\...`
-- `demo-rest\jpackage.ps1` / `demo-rest/jpackage.sh` — builds `demo-rest\target\dist\JfxSpringBootRest\...`
+- `demo\scripts\jpackage.ps1` / `demo/scripts/jpackage.sh` — builds `demo\target\dist\JfxSpringBoot\...`
+- `demo-rest\scripts\jpackage.ps1` / `demo-rest/scripts/jpackage.sh` — builds `demo-rest\target\dist\JfxSpringBootRest\...`
 
 Both invoke Maven via `..\mvnw.cmd` / `../mvnw` with `-pl <module>` so they build only that module out of the reactor, then assemble the plain app jar plus `mvn dependency:copy-dependencies` into a flat `target\jpackage-input` directory (jpackage's non-modular classpath only picks up jars directly in `--input`, not the Spring Boot fat jar's nested `BOOT-INF/` structure). Lombok is stripped from that directory afterward since it's compile-time only and unused at runtime. The Windows script produces both a no-console and a console launcher exe; the Linux script skips that distinction since Linux app-images don't have it.
 

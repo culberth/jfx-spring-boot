@@ -4,11 +4,12 @@
 #   ./jpackage.sh
 #
 # Output:
-#   target/dist/JfxSpringBootRest/bin/JfxSpringBootRest   (self-contained, bundles its own JRE)
+#   ../target/dist/JfxSpringBootRest/bin/JfxSpringBootRest   (self-contained, bundles its own JRE)
 
 set -euo pipefail
 
-MODULE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODULE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_ROOT="$(cd "$MODULE_DIR/.." && pwd)"
 MODULE_NAME="demo-rest"
 
